@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import GoBack from './GoBack'
-import axios from '../api/axios'
+import axios from '../axios'
 import { useParams } from 'react-router'
 import PlayerLobbyCard from './PlayerLobbyCard'
 

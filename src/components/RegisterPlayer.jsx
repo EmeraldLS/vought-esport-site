@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import axios from '../api/axios'
+import axios from '../axios'
 import GoBack from './GoBack'
 
 const RegisterPlayer = () => {

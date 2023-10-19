@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import TournamentCard from '../components/TournamentCard'
-import axios from '../api/axios'
+import axios from '../axios'
 import GoBack from '../components/GoBack'
 
 const ViewTournaments = () => {

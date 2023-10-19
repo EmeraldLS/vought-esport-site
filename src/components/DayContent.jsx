@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import axios from '../api/axios'
+import axios from '../axios'
 import LobbyRepresentation from './LobbyRepresentation'
 import GoBack from './GoBack'
 

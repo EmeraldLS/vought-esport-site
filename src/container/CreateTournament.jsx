@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import axios from '../api/axios'
 import GoBack from '../components/GoBack'
+import axios from '../axios'
 
 const CreateTournament = () => {
   const defaultButtonName = "Create Tournament"
