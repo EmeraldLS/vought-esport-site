@@ -12,6 +12,7 @@ const ViewTournaments = () => {
         try{
             const response = await axios.get("/tournaments")
             const data = await response?.data
+            console.log(data)
             setTournaments(data)
             setLoading(false)
         }catch(err) {
