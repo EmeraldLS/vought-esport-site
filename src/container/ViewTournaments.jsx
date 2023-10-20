@@ -2,27 +2,22 @@ import React, { useEffect, useState } from 'react'
 import TournamentCard from '../components/TournamentCard'
 import axios from '../axios'
 import GoBack from '../components/GoBack'
+import { useQuery } from '@tanstack/react-query'
+import { getRequest } from '../api/ApiCall'
+import { Tournaments } from '../api/APiURL'
 
 const ViewTournaments = () => {
   const [tournaments, setTournaments] = useState([])
-    const [err, setErr] = useState("")
-    const [loading, setLoading] = useState(false)
-    const getTournaments = async () => {
-        setLoading(true)
-        try{
-            const response = await axios.get("/tournaments")
-            const data = await response?.data
-            setTournaments(data)
-            setLoading(false)
-        }catch(err) {
-            if(err) {
-                setErr("An unexpected error occured. Please try again.")
-                setLoading(false)
-            }
-        }
-    }
+    const {data, isLoading: loading, isError: err } = useQuery({
+        queryKey: ["ViewTournament"],
+        queryFn: async () => await getRequest(Tournaments)
+    })
 
-    useEffect(() => getTournaments, [])
+    console.log(data)
+
+    
+
+    useEffect(() => setTournaments(data), [data])
   return (
     <>
     <GoBack />
@@ -30,11 +25,11 @@ const ViewTournaments = () => {
     <div className='container mx-auto px-4 grid gap-5 grid-cols-1 md:grid-cols-2 mt-5'>
         {
             
-            !loading ? tournaments.map((tournament, i )=> {
+            !loading ? tournaments?.map((tournament, i )=> {
 
                 return (
-                <div >
-                    <TournamentCard name={tournament.tournament_name} id={tournament._id} key={i}  />
+                <div key={i}>
+                    <TournamentCard name={tournament.tournament_name} id={tournament._id}   />
                 </div>
                 
                 )

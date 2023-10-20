@@ -23,6 +23,7 @@ function App() {
               <Route path='view' element={<ViewTournaments />} />
               <Route path='create' element={<CreateTournament />} />
           </Route>
+          
           <Route path='tournament/:id' element={<TournamentContent />} />
           <Route path='tournament/:id/day/:day_number' element={<DayContent />} />
           <Route path='tournament/:id/day/:day_number/:lobby_id' element={<LobbyContent />}/>

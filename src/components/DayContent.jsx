@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import axios from '../axios'
 import LobbyRepresentation from './LobbyRepresentation'
@@ -34,7 +34,8 @@ const DayContent = () => {
         }
       }
     }
-    const getLobbies = async () => {
+
+    const getLobbies = () => async () => {
       setLoading(true)
       try{
         const response = await axios.get(`/lobbies/${id}/${day_number}`)
@@ -49,7 +50,7 @@ const DayContent = () => {
       }
     }
 
-    useEffect(() => getLobbies, [])
+    useEffect(() => getLobbies(), [])
 
   return (
     <div>
@@ -58,8 +59,8 @@ const DayContent = () => {
         err ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err}</div> 
         : !loading ? lobbies.map((lobby, i) => {
           return (
-            <div className='container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 mt-5'>
-              <LobbyRepresentation date={lobby.Date} lobbyID={lobby.LobbyID} lobbyNumber={lobby.lobby_number} key={i} />
+            <div className='container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 mt-5' key={i}>
+              <LobbyRepresentation date={lobby.Date} lobbyID={lobby.LobbyID} lobbyNumber={lobby.lobby_number} />
             </div>
             
           )
