@@ -3,68 +3,73 @@ import GoBack from './GoBack'
 import axios from '../axios'
 import { useParams } from 'react-router'
 import PlayerLobbyCard from './PlayerLobbyCard'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getRequest, putRequest } from '../api/ApiCall'
+import { AddPlayerKills, PlayersInLobby } from '../api/APiURL'
 
 const LobbyContent = () => {
+  
+  const defaultButtonName = "Submit"
+  const defaultColor = "bg-green-400"
   const [players, setPlayers] = useState([])
   const {id, day_number, lobby_id, } = useParams()
-  const [loading, setLoading] = useState(false)
-  const [err, setErr] = useState("")
   const [kills, setKills]= useState(0)
   const [player_id, setPlayerID] = useState("")
-  const [killsErr, setKillsErr] = useState("")
   const [showForm, setShowForm] = useState(false)
+  const [button, setButtonName] = useState(defaultButtonName)
+  const [disabled, setDisabled] = useState(false)
+  const [color, setColor] = useState(defaultColor)
+
+
+  const {data, isLoading: loading, isError, error: err} = useQuery({
+    queryKey: ["Players"],
+    queryFn: () => getRequest(PlayersInLobby(id, day_number, lobby_id))
+  })
 
   const controlShowForm = () => {
     setShowForm(!showForm)
   }
 
-  const getLobbyPlayers = async() => {
-    setLoading(true)
-    try{
-      const response =  await axios.get(`/lobby_players/${id}/${day_number}/${lobby_id}`)
-      const data = await response.data
-      setPlayers(data)
-      setLoading(false)
-    }catch(err) {
-      if(err) {
-        setErr("An error occured. Please try again later.")
-        setLoading(false)
-      }
-    }
-  }
 
-  const content = {
-    lobby_id,
-    day_number: Number(day_number),
-    player_id,
-    kills: Number(kills)
-  }
+  const queryClient = useQueryClient()
+
+  const {mutate, isError: isKillsErr, error: killsErr, isSuccess} = useMutation({
+    mutationFn: (content) => putRequest(AddPlayerKills(id), content),
+    onError: () => {
+      setButtonName(defaultButtonName)
+      setDisabled(false)
+      setColor(defaultColor)
+    },
+    onSuccess: () => {
+      setButtonName(defaultButtonName)
+      setDisabled(false)
+      setColor(defaultColor)
+    }
+  })
 
   const addPlayerKills = async (e)=> {
     e.preventDefault()
-    setLoading(true)
-    setKillsErr("")
-    try{
-      const response = await axios.put(`/lobby/player/${id}`, content)
-      const players = await response.data
-      setPlayers(players)
-      setLoading(false)
-    }catch(err) {
-      if(err) {
-        setKillsErr(err.response.data.response)
-        setLoading(false)
-      }
+    setButtonName("Processing...")
+    setDisabled(true)
+    setColor("bg-yellow-500")
+    const content = {
+      lobby_id,
+      day_number: Number(day_number),
+      player_id,
+      kills: Number(kills)
     }
+    mutate(content)
+    
   }
-  useEffect(() => getLobbyPlayers, [])
+  useEffect(() => setPlayers(data), [data])
   useEffect(() => {
-    setKillsErr("")
-  }, [player_id, kills])
+    queryClient.invalidateQueries({queryKey: ["Players"]})
+  }, [isSuccess])
   return (
-    <div>
+    <div className='pb-5'>
       <GoBack />
   
-      {err ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err}</div>: ""} 
+      {isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err.response.data.response}</div>: ""} 
       <div className='container mx-auto px-4 gap-5 grid grid-cols-1 md:grid-cols-2 mt-5'>
         
         { 
@@ -72,11 +77,11 @@ const LobbyContent = () => {
         
         !loading 
         
-        ? players.length === 0 
+        ? players?.length === 0 
         ? 
         <div className=' text-green-500 bg-gray-100 pl-1 py-5 text-2xl font-bold'>No player in this lobby yet.</div>
          : 
-          players.map((player, i) => {
+          players?.map((player, i) => {
             return <PlayerLobbyCard name={player.name} kills={player.kills} key={i} playerID={player.player_id} />
           })
           : <div className=' bg-yellow-500 p-5'>Loading, please wait...</div>
@@ -86,13 +91,13 @@ const LobbyContent = () => {
       <div>
       {
         
-        players.length === 4 ? <div className=' text-green-500 my-3 bg-gray-100 pl-1 py-5 text-2xl font-bold'>Players for this lobby is completed!</div> : 
+        players?.length === 4 ? <div className=' text-green-500 my-3 bg-gray-100 pl-1 py-5 text-2xl font-bold'>Players for this lobby is completed!</div> : 
         <button onClick={controlShowForm} className=' bg-lime-500 text-white px-5 py-2 mx-5 mt-3'>Add Player Kills </button>
       }
       {
         showForm ?
-        players.length !== 4 ? <form method="post" className='my-3 flex flex-col md ' onSubmit={addPlayerKills}>
-          {killsErr ? <div className=' bg-red-500 rounded-lg m-3 p-3 text-white text-1xl text-center'>{killsErr}</div>: ""}
+        players?.length !== 4 ? <form method="post" className='my-3 flex flex-col md ' onSubmit={addPlayerKills}>
+          {isKillsErr ? <div className=' bg-red-500 rounded-lg m-3 p-3 text-white text-1xl text-center'>{killsErr.response.data.response}</div>: ""}
 
         <div className='flex flex-col gap-5 px-5 my-3'>
           <label htmlFor="player_id" className='sr-only'>Player ID</label>
@@ -117,7 +122,7 @@ const LobbyContent = () => {
           />
         </div>
         
-        <button className=' bg-green-400 py-3 w-[100px] mt-3 ml-5'>Submit</button>
+        <button className={`${color} py-3 w-[100px] mt-3 ml-5`} disabled={disabled}>{button}</button>
       </form>  : ""
       : ""
       }

@@ -2,44 +2,44 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import axios from '../axios'
 import GoBack from './GoBack'
+import { useMutation } from '@tanstack/react-query'
+import { postRequest } from '../api/ApiCall'
+import { RegPlayer } from '../api/APiURL'
 
 const RegisterPlayer = () => {
     const defaultButtonName = "Register Player"
     const [playerName, setPlayerName] = useState("")
     const [disabled, setDisabled] = useState(false)
     const [buttonName, setButtonName] = useState(defaultButtonName)
-    const [err, setErr] = useState("")
     const navigate = useNavigate()
-    const ProcessSubmit = async (e) => {
+
+
+    const {mutate, isError, error: err} = useMutation({
+      mutationFn:  (player) => postRequest(RegPlayer(), player),
+      onSuccess: () => {
+        navigate("/players")
+        setButtonName(defaultButtonName)
+      },
+      onError: () => {
+        setButtonName(defaultButtonName)
+        setDisabled(false)
+      },
+    })
+
+    const ProcessSubmit = (e) => {
       e.preventDefault()
       setButtonName("Processing, please wait...")
       setDisabled(true)
       const content = {
         name: playerName
       }
-  
-      try{
-        await axios.post("/register", content)
-        setButtonName(defaultButtonName)
-        setDisabled(false)
-        navigate("/players")
-  
-      }catch(err) {
-        if(err) {
-          setErr(err.response.data.response)
-          setButtonName(defaultButtonName)
-          setDisabled(false)
-        }
-      }
-      
+      mutate(content)
     }
-    useEffect(() => {
-      setErr("")
-    }, [playerName])
+
     return (
       <div className=' h-[90vh] bg-gray-400 w-full flex flex-col gap-5 justify-center ' style={{alignItems: 'center'}}>
         <GoBack />
-        {err ? <div className=' bg-red-500 rounded-lg p-3 text-white text-1xl text-center'>{err}</div>: ""}
+        {isError ? <div className=' bg-red-500 rounded-lg p-3 text-white text-1xl text-center'>{err.response.data.response}</div>: ""}
           <form method="post" onSubmit={ProcessSubmit} >
             <div className='flex flex-col gap-5'>
               <label htmlFor="name" className=' sr-only'>Player Name</label>

@@ -1,33 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import PlayerCard from '../components/PlayerCard'
-import axios from '../axios'
+import {useQuery} from '@tanstack/react-query'
 import GoBack from '../components/GoBack'
+import { getRequest } from '../api/ApiCall'
+import { Players } from '../api/APiURL'
 
 const ViewPlayers = () => {
-    const [players, setPlayers] = useState([])
-    const [loading, setLoading] = useState(false)
-    const [err, setErr] = useState("")
-    const getAllPlayers = async () => {
-        setLoading(true)
-        try{
-            const response = await axios.get("/users")
-            const data = await response.data
-            setPlayers(data)
-            setLoading(false)
-        }catch(err) {
-            if(err) {
-                console.error(err)
-                setErr("An occured, please try again!")
-                setLoading(false)
-            }
-        }
-    }
 
-    useEffect(() => getAllPlayers, [])
+    const {data, isLoading: loading, isError, error: err} = useQuery({
+        queryKey: ["ViewPlayers"],
+        queryFn: async () => getRequest(Players(1))
+    })
+
+    const [players, setPlayers] = useState([])
+
+    useEffect(() => setPlayers(data), [data])
   return (
     <div>
         <GoBack />
-        {err ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err}</div> : ""}
+        {isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err.message}</div> : ""}
         <div className='container mx-auto px-4 gap-5 grid grid-cols-1 md:grid-cols-2 mt-5'>
             { 
             !loading ?
