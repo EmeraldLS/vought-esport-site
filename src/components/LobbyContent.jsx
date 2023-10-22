@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import GoBack from './GoBack'
-import axios from '../axios'
 import { useParams } from 'react-router'
 import PlayerLobbyCard from './PlayerLobbyCard'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -44,6 +43,7 @@ const LobbyContent = () => {
       setButtonName(defaultButtonName)
       setDisabled(false)
       setColor(defaultColor)
+      setPlayerID("")
     }
   })
 

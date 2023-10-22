@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import axios from '../axios'
 import { useParams } from 'react-router'
 import GoBack from './GoBack'
 import { useQuery } from '@tanstack/react-query'

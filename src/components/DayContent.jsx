@@ -1,5 +1,5 @@
 import React, {  useEffect, useState } from 'react'
-import { Await, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import LobbyRepresentation from './LobbyRepresentation'
 import GoBack from './GoBack'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -27,6 +27,7 @@ const DayContent = () => {
 
     const {isError: isLobbyCreateErr, error: lobbyCreateErr, mutate, isSuccess} = useMutation({
       mutationFn: (newLobby) =>  postRequest(PostLobby(id), newLobby),
+
     })
 
 
@@ -38,11 +39,11 @@ const DayContent = () => {
       }
       mutate(dataTOsend)
     }
-
     useEffect(() => {
       if(isSuccess) {
         queryClient.invalidateQueries({ queryKey: ['Lobbies'] })
       }
+      // eslint-disable-next-line
     }, [isSuccess])
     useEffect(() => setLobbies(data), [data])
 
@@ -50,7 +51,7 @@ const DayContent = () => {
     <div>
       <GoBack />
       {
-        isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err.message}</div> 
+        isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err?.response?.data.response}</div> 
         : !loading ? lobbies?.map((lobby, i) => {
           return (
             <div className='container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 mt-5' key={i}>
@@ -71,7 +72,7 @@ const DayContent = () => {
           lobbies?.length !== 3 ?
           showForm ? 
           <form method="post" className='my-3 flex flex-col  justify-start align-top' onSubmit={createLobby}>
-            {isLobbyCreateErr ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{lobbyCreateErr.message}</div> : ""}
+            {isLobbyCreateErr ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{lobbyCreateErr?.response?.data.response}</div> : ""}
             <div className='h-full'> 
               <label htmlFor="lobby_number">Lobby Number</label>
               <input type="number" onChange={e => setLobbyNumber(e.target.value)} min={0} max={3} className='border border-gray-300 ml-3 rounded-sm h-[50px] p-3' />

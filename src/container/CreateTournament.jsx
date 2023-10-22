@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 import GoBack from '../components/GoBack'
-import axios from '../axios'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation} from '@tanstack/react-query'
 import { postRequest } from '../api/ApiCall'
 import { RegTour } from '../api/APiURL'
 
