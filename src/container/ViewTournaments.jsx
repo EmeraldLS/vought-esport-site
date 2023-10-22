@@ -21,7 +21,7 @@ const ViewTournaments = () => {
     <>
         <GoBack />
         {isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err.message}</div> : ""}
-        <div className='container mx-auto px-4 grid gap-5 grid-cols-1 md:grid-cols-2 mt-5'>
+        <div className='container mx-auto px-4 grid gap-5 grid-cols-1 md:grid-cols-2 mt-5 pb-5'>
             {
                 
                 !loading ? tournaments?.map((tournament, i )=> {
