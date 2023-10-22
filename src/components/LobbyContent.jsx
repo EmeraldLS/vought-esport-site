@@ -4,13 +4,14 @@ import { useParams } from 'react-router'
 import PlayerLobbyCard from './PlayerLobbyCard'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getRequest, putRequest } from '../api/ApiCall'
-import { AddPlayerKills, PlayersInLobby } from '../api/APiURL'
+import { AddPlayerKills, Players, PlayersInLobby } from '../api/APiURL'
 
 const LobbyContent = () => {
   
   const defaultButtonName = "Submit"
   const defaultColor = "bg-green-400"
   const [players, setPlayers] = useState([])
+  const [users, setUsers] = useState([])
   const {id, day_number, lobby_id, } = useParams()
   const [kills, setKills]= useState(0)
   const [player_id, setPlayerID] = useState("")
@@ -25,6 +26,12 @@ const LobbyContent = () => {
     queryFn: () => getRequest(PlayersInLobby(id, day_number, lobby_id))
   })
 
+
+  const getAllUsers = async () => {
+    const data = await getRequest(Players(1))
+    setUsers(data)
+  } 
+
   const controlShowForm = () => {
     setShowForm(!showForm)
   }
@@ -34,16 +41,17 @@ const LobbyContent = () => {
 
   const {mutate, isError: isKillsErr, error: killsErr, isSuccess} = useMutation({
     mutationFn: (content) => putRequest(AddPlayerKills(id), content),
+
     onError: () => {
       setButtonName(defaultButtonName)
       setDisabled(false)
       setColor(defaultColor)
     },
+
     onSuccess: () => {
       setButtonName(defaultButtonName)
       setDisabled(false)
       setColor(defaultColor)
-      setPlayerID("")
     }
   })
 
@@ -52,16 +60,19 @@ const LobbyContent = () => {
     setButtonName("Processing...")
     setDisabled(true)
     setColor("bg-yellow-500")
+
     const content = {
       lobby_id,
       day_number: Number(day_number),
       player_id,
       kills: Number(kills)
     }
+
     mutate(content)
     
   }
   useEffect(() => setPlayers(data), [data])
+  
   useEffect(() => {
     queryClient.invalidateQueries({queryKey: ["Players"]})
   }, [isSuccess])
@@ -89,6 +100,8 @@ const LobbyContent = () => {
         
       </div>
       <div>
+      </div>
+      <div>
       {
         
         players?.length === 4 ? <div className=' text-green-500 my-3 bg-gray-100 pl-1 py-5 text-2xl font-bold'>Players for this lobby is completed!</div> : 
@@ -100,16 +113,22 @@ const LobbyContent = () => {
           {isKillsErr ? <div className=' bg-red-500 rounded-lg m-3 p-3 text-white text-1xl text-center'>{killsErr.response.data.response}</div>: ""}
 
         <div className='flex flex-col gap-5 px-5 my-3'>
-          <label htmlFor="player_id" className='sr-only'>Player ID</label>
-          <input 
-          type="text" 
-          value={player_id} 
+
+          <select 
+          name="users" 
+          id="users" 
+          className='h-[50px] border-black border rounded-sm w-[250px] outline-none px-2 shadow-xl'
           onChange={e => setPlayerID(e.target.value)}
-          className='h-[50px] border-black border rounded-sm w-[250px] outline-none px-2 shadow-xl' 
-          id='player_id' 
-          placeholder='Player ID'
-          />
-          
+          onClick={getAllUsers}
+          >
+            <option value="">Select Player</option>
+            {users?.map((user,i) => {
+              return (
+              <option key={i} value={`${user.player_id}`}>{`${user.name}`}</option>
+              )
+            })}
+          </select>
+
         </div>
         <div className='flex flex-col gap-5 px-5'> 
           <label htmlFor="kills" className='sr-only'>Lobby Number</label>

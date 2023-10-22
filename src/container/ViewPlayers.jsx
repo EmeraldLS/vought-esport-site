@@ -13,7 +13,9 @@ const ViewPlayers = () => {
     })
 
     const [players, setPlayers] = useState([])
-
+    if(players) {
+        console.log(players)
+    }
     useEffect(() => setPlayers(data), [data])
   return (
     <div className='pb-5'>
