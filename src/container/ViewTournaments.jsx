@@ -12,6 +12,9 @@ const ViewTournaments = () => {
         queryFn: async () => await getRequest(Tournaments)
     })
 
+    if(tournaments) {
+      console.log(tournaments)
+    }
 
     useEffect(() => setTournaments(data), [data])
   return (
