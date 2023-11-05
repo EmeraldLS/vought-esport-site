@@ -13,7 +13,7 @@ const LobbyContent = () => {
   const [players, setPlayers] = useState([])
   const [users, setUsers] = useState([])
   const {id, day_number, lobby_id, } = useParams()
-  const [kills, setKills]= useState(0)
+  const [kills, setKills]= useState("")
   const [player_id, setPlayerID] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [button, setButtonName] = useState(defaultButtonName)
@@ -46,12 +46,14 @@ const LobbyContent = () => {
       setButtonName(defaultButtonName)
       setDisabled(false)
       setColor(defaultColor)
+      setKills("")
     },
 
     onSuccess: () => {
       setButtonName(defaultButtonName)
       setDisabled(false)
       setColor(defaultColor)
+      setKills("")
     }
   })
 
@@ -89,8 +91,9 @@ const LobbyContent = () => {
         !loading 
         
         ? players?.length === 0 
+        
         ? 
-        <div className=' text-green-500 bg-gray-100 pl-1 py-5 text-2xl font-bold'>No player in this lobby yet.</div>
+           <div className=' text-green-500 bg-gray-100 pl-1 py-5 text-2xl font-bold'>No player in this lobby yet.</div>
          : 
           players?.map((player, i) => {
             return <PlayerLobbyCard name={player.name} kills={player.kills} key={i} playerID={player.player_id} />
@@ -121,14 +124,13 @@ const LobbyContent = () => {
           onChange={e => setPlayerID(e.target.value)}
           onClick={getAllUsers}
           >
-            <option value="">Select Player</option>
+            <option value={player_id}>Select Player</option>
             {users?.map((user,i) => {
               return (
               <option key={i} value={`${user.player_id}`}>{`${user.name}`}</option>
               )
             })}
           </select>
-
         </div>
         <div className='flex flex-col gap-5 px-5'> 
           <label htmlFor="kills" className='sr-only'>Lobby Number</label>
@@ -138,6 +140,7 @@ const LobbyContent = () => {
           onChange={e => setKills(e.target.value)} min={0} max={100} 
           className='h-[50px] border-black border rounded-sm w-[250px] outline-none px-2 shadow-xl' 
           placeholder='No of kills'
+          value={kills}
           />
         </div>
         

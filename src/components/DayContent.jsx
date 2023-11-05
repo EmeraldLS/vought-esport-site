@@ -4,7 +4,7 @@ import LobbyRepresentation from './LobbyRepresentation'
 import GoBack from './GoBack'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getRequest, postRequest } from '../api/ApiCall'
-import { Lobbies, PostLobby } from '../api/APiURL'
+import { Lobbies, PlayerKillsInADay, PlayersInDay, PostLobby } from '../api/APiURL'
 
 const DayContent = () => {
     const {id} = useParams()
@@ -12,6 +12,9 @@ const DayContent = () => {
     const [lobbies, setLobbies] = useState([])
     const [lobbyNumber, setLobbyNumber] = useState(0)
     const [showForm, setShowForm] = useState(false)
+    const [players, setPlayers] = useState([])
+    const [playerID, setPlayerID] = useState("")
+    const [totalKillsData, setTotalKillsData] = useState({})
     // const [lobbyCreateErr, setLobbyCreateErr] = useState("")
 
     const {data, isError, isLoading: loading, error: err} = useQuery({
@@ -21,6 +24,21 @@ const DayContent = () => {
 
     const controlShowForm = () => {
       setShowForm(!showForm)
+    }
+
+    const getPlayersInDay = async () => {
+      const data = await getRequest(PlayersInDay(id, day_number))
+      setPlayers(data)
+    }
+
+    const getTotalPlayerKillsInADay = async (e) => {
+      e.preventDefault()
+      console.log(playerID)
+      if( playerID === ""){
+        return
+      }
+      const data = await getRequest(PlayerKillsInADay(id, day_number, playerID))
+      setTotalKillsData(data)
     }
 
    const queryClient = useQueryClient()
@@ -52,14 +70,56 @@ const DayContent = () => {
       <GoBack />
       {
         isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err?.response?.data.response}</div> 
-        : !loading ? lobbies?.map((lobby, i) => {
-          return (
-            <div className='container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 mt-5' key={i}>
-              <LobbyRepresentation date={lobby.Date} lobbyID={lobby.LobbyID} lobbyNumber={lobby.lobby_number} />
+        : !loading ?
+          <div className='container grid grid-cols-1 md:grid-cols-2 md:p-5'>
+            <div className=' container mx-auto px-4 grid grid-cols-1 ' >
+            {
+              lobbies?.length == 0 ? 
+              <div className=' text-green-500 bg-gray-100 pl-1 py-5 text-2xl font-bold'>There's no player in this lobby yet</div>
+              :
+               lobbies?.map((lobby, i) => {
+                return (
+                  
+                    <LobbyRepresentation date={lobby.Date} lobbyID={lobby.LobbyID} lobbyNumber={lobby.lobby_number} key={i} />
+                  
+                )
+              })
+            }
             </div>
-            
-          )
-        })
+            <div >
+              <form className='flex flex-col gap-4 ml-4' onSubmit={getTotalPlayerKillsInADay} method='GET'>
+              <label htmlFor="players" className='text-2xl text-gray-800'>List of players in Today's lobbies</label>
+              <hr />
+              <div className='flex flex-col'>
+                <select 
+                    name="players" 
+                    id="players" 
+                    className='h-[50px] border-black border rounded-sm w-[250px] outline-none px-2 shadow-xl'
+                    onChange={e => setPlayerID(e.target.value)}
+                    onClick={getPlayersInDay}
+                    >
+                      <option value="">Get Player Total Kills </option>
+                      {
+                      players?.map((player, i) => {
+                        return <option value={player.player_id} key={i}>{player.name}</option>
+                      })
+                      }
+                    </select>
+                    <button className=' bg-green-400 py-3 w-[100px] mt-3'>Submit</button>
+                    {
+                      
+                      totalKillsData?.total_kills ? 
+                      <div className='mt-2'>
+                        <span className='font-bold'>{totalKillsData.player_name}</span> has {totalKillsData.total_kills} kill(s) for today's game
+                      </div> : ""
+                    }
+              </div>
+                
+              </form>
+              
+            </div>
+          </div> 
+           
         : <div className=' bg-yellow-500 p-5'>Loading, please wait...</div>
       }
       <div className='mx-auto px-4 my-5'>

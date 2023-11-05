@@ -10,3 +10,5 @@ export const RegTour = () => `${baseURL}/attendance`
 export const PlayersInLobby = (id, day_number, lobby_id) => `${baseURL}/lobby_players/${id}/${day_number}/${lobby_id}`
 export const AddPlayerKills = (id) => `${baseURL}/lobby/player/${id}`
 export const PostLobby = (id) => `${baseURL}/lobby/${id}`
+export const PlayersInDay = (id, day_number) => `${baseURL}/players/${id}/${day_number}` 
+export const PlayerKillsInADay  = (id, day_number, player_id) => `${baseURL}/player_kills_total_day/${id}/${day_number}/${player_id}`
