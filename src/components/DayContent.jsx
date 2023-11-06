@@ -111,7 +111,7 @@ const DayContent = () => {
       </div>
             </div>
             <div >
-              <form className='flex flex-col gap-4 ml-4' onSubmit={getTotalPlayerKillsInADay} method='GET'>
+              <form className='flex flex-col gap-4 ml-4 pb-4' onSubmit={getTotalPlayerKillsInADay} method='GET'>
               <label htmlFor="players" className='text-2xl text-gray-800'>List of players in Today's lobbies</label>
               <hr />
               <div className='flex flex-col'>
