@@ -101,7 +101,7 @@ const DayContent = () => {
             {isLobbyCreateErr ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{lobbyCreateErr?.response?.data.response}</div> : ""}
             <div className='h-full'> 
               <label htmlFor="lobby_number" className='sr-only'>Lobby Number</label>
-              <input type="number" onChange={e => setLobbyNumber(e.target.value)} min={0} max={3} className='border border-gray-300 rounded-sm h-[100%] p-3 min-h-[50px]' value={lobbyNumber} placeholder='Lobby Number e.g 1' />
+              <input type="number" onChange={e => setLobbyNumber(e.target.value)} min={0} max={3} className='border border-gray-300 p-3 h-[50px] w-full md:w-[250px]' value={lobbyNumber} placeholder='Lobby Number e.g 1' />
             </div>
             
             <button className=' bg-green-400 py-3 w-[100px] mt-3'>Submit</button>
