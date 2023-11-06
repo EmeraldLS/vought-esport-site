@@ -85,7 +85,6 @@ const DayContent = () => {
                 return (
                   
                     <LobbyRepresentation date={lobby.Date} lobbyID={lobby.LobbyID} lobbyNumber={lobby.lobby_number} key={i} />
-                  
                 )
               })
             }
