@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    font-family: "Fira Sans", sans-serif;
+}
 
 nav a{
     transition: all 0.2s ease;

@@ -1,156 +1,205 @@
-import React, { useEffect, useState } from 'react'
-import GoBack from './GoBack'
-import { useParams } from 'react-router'
-import PlayerLobbyCard from './PlayerLobbyCard'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getRequest, putRequest } from '../api/ApiCall'
-import { AddPlayerKills, Players, PlayersInLobby } from '../api/APiURL'
+import React, { useEffect, useState } from "react";
+import GoBack from "./GoBack";
+import { useParams } from "react-router";
+import PlayerLobbyCard from "./PlayerLobbyCard";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getRequest, putRequest } from "../api/ApiCall";
+import { AddPlayerKills, Players, PlayersInLobby } from "../api/APiURL";
 
 const LobbyContent = () => {
-  
-  const defaultButtonName = "Submit"
-  const defaultColor = "bg-green-400"
-  const [players, setPlayers] = useState([])
-  const [users, setUsers] = useState([])
-  const {id, day_number, lobby_id, } = useParams()
-  const [kills, setKills]= useState("")
-  const [player_id, setPlayerID] = useState("")
-  const [showForm, setShowForm] = useState(false)
-  const [button, setButtonName] = useState(defaultButtonName)
-  const [disabled, setDisabled] = useState(false)
-  const [color, setColor] = useState(defaultColor)
+  const defaultButtonName = "Submit";
+  const defaultColor = "bg-green-500";
+  const [players, setPlayers] = useState([]);
+  const [users, setUsers] = useState([]);
+  const { id, day_number, lobby_id } = useParams();
+  const [kills, setKills] = useState("");
+  const [player_id, setPlayerID] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [button, setButtonName] = useState(defaultButtonName);
+  const [disabled, setDisabled] = useState(false);
+  const [color, setColor] = useState(defaultColor);
 
-
-  const {data, isLoading: loading, isError, error: err} = useQuery({
+  const {
+    data,
+    isLoading: loading,
+    isError,
+    error: err,
+  } = useQuery({
     queryKey: ["Players"],
-    queryFn: () => getRequest(PlayersInLobby(id, day_number, lobby_id))
-  })
-
+    queryFn: () => getRequest(PlayersInLobby(id, day_number, lobby_id)),
+  });
 
   const getAllUsers = async () => {
-    const data = await getRequest(Players(1))
-    setUsers(data)
-  } 
+    const data = await getRequest(Players(1));
+    setUsers(data);
+  };
 
   const controlShowForm = () => {
-    setShowForm(!showForm)
-  }
+    setShowForm(!showForm);
+  };
 
+  const queryClient = useQueryClient();
 
-  const queryClient = useQueryClient()
-
-  const {mutate, isError: isKillsErr, error: killsErr, isSuccess} = useMutation({
+  const {
+    mutate,
+    isError: isKillsErr,
+    error: killsErr,
+    isSuccess,
+  } = useMutation({
     mutationFn: (content) => putRequest(AddPlayerKills(id), content),
-
     onError: () => {
-      setButtonName(defaultButtonName)
-      setDisabled(false)
-      setColor(defaultColor)
-      setKills("")
+      setButtonName(defaultButtonName);
+      setDisabled(false);
+      setColor(defaultColor);
+      setKills("");
     },
-
     onSuccess: () => {
-      setButtonName(defaultButtonName)
-      setDisabled(false)
-      setColor(defaultColor)
-      setKills("")
-    }
-  })
+      setButtonName(defaultButtonName);
+      setDisabled(false);
+      setColor(defaultColor);
+      setKills("");
+    },
+  });
 
-  const addPlayerKills = async (e)=> {
-    e.preventDefault()
-    setButtonName("Processing...")
-    setDisabled(true)
-    setColor("bg-yellow-500")
+  const addPlayerKills = async (e) => {
+    e.preventDefault();
+    setButtonName("Processing...");
+    setDisabled(true);
+    setColor("bg-yellow-500");
 
     const content = {
       lobby_id,
       day_number: Number(day_number),
       player_id,
-      kills: Number(kills)
-    }
+      kills: Number(kills),
+    };
 
-    mutate(content)
-    
-  }
-  useEffect(() => setPlayers(data), [data])
-  
+    mutate(content);
+  };
+
+  useEffect(() => setPlayers(data), [data]);
+
   useEffect(() => {
-    queryClient.invalidateQueries({queryKey: ["Players"]})
-  }, [isSuccess])
+    queryClient.invalidateQueries({ queryKey: ["Players"] });
+  }, [isSuccess]);
+
   return (
-    <div className='pb-5'>
-      <GoBack />
-  
-      {isError ? <div className=' bg-red-500 rounded-sm p-3 text-white text-2xl text-center'>{err.response.data.response}</div>: ""} 
-      <div className='container mx-auto px-4 gap-5 grid grid-cols-1 md:grid-cols-2 mt-5'>
-        
-        { 
-        
-        
-        !loading 
-        
-        ? players?.length === 0 
-        
-        ? 
-           <div className=' text-green-500 bg-gray-100 pl-1 py-5 text-2xl font-bold'>No player in this lobby yet.</div>
-         : 
-          players?.map((player, i) => {
-            return <PlayerLobbyCard name={player.name} kills={player.kills} key={i} playerID={player.player_id} />
-          })
-          : <div className=' bg-yellow-500 p-5'>Loading, please wait...</div>
-        } 
-        
-      </div>
-      <div>
-      </div>
-      <div>
-      {
-        
-        players?.length === 4 ? <div className=' text-green-500 my-3 bg-gray-100 pl-1 py-5 text-2xl font-bold'>Players for this lobby is completed!</div> : 
-        <button onClick={controlShowForm} className=' bg-lime-500 text-white px-5 py-2 mx-5 mt-3'>Add Player Kills </button>
-      }
-      {
-        showForm ?
-        players?.length !== 4 ? <form method="post" className='my-3 flex flex-col md ' onSubmit={addPlayerKills}>
-          {isKillsErr ? <div className=' bg-red-500 rounded-lg m-3 p-3 text-white text-1xl text-center'>{killsErr.response.data.response}</div>: ""}
-
-        <div className='flex flex-col gap-5 px-5 my-3'>
-
-          <select 
-          name="users" 
-          id="users" 
-          className='h-[50px] border-black border rounded-sm w-[250px] outline-none px-2 shadow-xl'
-          onChange={e => setPlayerID(e.target.value)}
-          onClick={getAllUsers}
-          >
-            <option value={player_id}>Select Player</option>
-            {users?.map((user,i) => {
-              return (
-              <option key={i} value={`${user.player_id}`}>{`${user.name}`}</option>
-              )
-            })}
-          </select>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <GoBack />
         </div>
-        <div className='flex flex-col gap-5 px-5'> 
-          <label htmlFor="kills" className='sr-only'>Lobby Number</label>
-          <input 
-          type="number" 
-          id='kills' 
-          onChange={e => setKills(e.target.value)} min={0} max={100} 
-          className='h-[50px] border-black border rounded-sm w-[250px] outline-none px-2 shadow-xl' 
-          placeholder='No of kills'
-          value={kills}
-          />
+
+        {isError && (
+          <div className="mb-6">
+            <div className="bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg text-lg font-medium text-center">
+              {err.response.data.response}
+            </div>
+          </div>
+        )}
+
+        <div className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              <div className="col-span-full">
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 flex items-center">
+                  <div className="animate-pulse mr-3 h-4 w-4 rounded-full bg-yellow-500"></div>
+                  <p className="text-yellow-700">Loading, please wait...</p>
+                </div>
+              </div>
+            ) : players?.length === 0 ? (
+              <div className="col-span-full">
+                <div className="bg-gray-100 border-l-4 border-green-500 p-6 rounded-lg">
+                  <p className="text-green-700 text-xl font-semibold">
+                    No player in this lobby yet.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              players?.map((player, i) => (
+                <PlayerLobbyCard
+                  name={player.name}
+                  kills={player.kills}
+                  key={i}
+                  playerID={player.player_id}
+                />
+              ))
+            )}
+          </div>
         </div>
-        
-        <button className={`${color} py-3 w-[100px] mt-3 ml-5`} disabled={disabled}>{button}</button>
-      </form>  : ""
-      : ""
-      }
+
+        <div className="mt-8">
+          {players?.length === 4 ? (
+            <div className="bg-purple-100 border-l-4 border-purple-500 p-6 rounded-lg">
+              <p className="text-purple-700 text-xl font-semibold">
+                Players for this lobby is completed!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <button
+                onClick={controlShowForm}
+                className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-150 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-opacity-50"
+              >
+                Add Player Kills
+              </button>
+
+              {showForm && players?.length !== 4 && (
+                <form
+                  method="post"
+                  onSubmit={addPlayerKills}
+                  className="bg-white p-6 rounded-lg shadow-lg space-y-6"
+                >
+                  {isKillsErr && (
+                    <div className="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
+                      <p className="text-red-700">
+                        {killsErr.response.data.response}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-4 space-x-3">
+                    <select
+                      name="users"
+                      id="users"
+                      className="w-full md:w-64 h-12 px-4 border border-gray-300 rounded-lg shadow-sm focus:border-lime-500 focus:ring-1 focus:ring-lime-500 focus:outline-none"
+                      onChange={(e) => setPlayerID(e.target.value)}
+                      onClick={getAllUsers}
+                    >
+                      <option value={player_id}>Select Player</option>
+                      {users?.map((user, i) => (
+                        <option key={i} value={`${user.player_id}`}>
+                          {`${user.name}`}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="number"
+                      id="kills"
+                      onChange={(e) => setKills(e.target.value)}
+                      min={0}
+                      max={100}
+                      className="w-full md:w-64 h-12 px-4 border border-gray-300 rounded-lg shadow-sm focus:border-lime-500 focus:ring-1 focus:ring-lime-500 focus:outline-none"
+                      placeholder="No of kills"
+                      value={kills}
+                    />
+
+                    <button
+                      className={`${color} text-white px-6 py-3 rounded-lg shadow-md transition duration-150 ease-in-out hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${color} disabled:opacity-50`}
+                      disabled={disabled}
+                    >
+                      {button}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LobbyContent
+export default LobbyContent;
