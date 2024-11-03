@@ -17,7 +17,10 @@ export const SignupButton = () => {
   };
 
   return (
-    <button className="button__sign-up" onClick={handleSignUp}>
+    <button
+      className=" w-full bg-gray-600 p-2 text-white rounded-md whitespace-nowrap"
+      onClick={handleSignUp}
+    >
       Sign Up
     </button>
   );

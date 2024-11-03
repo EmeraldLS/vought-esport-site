@@ -16,7 +16,10 @@ export const LoginButton = () => {
   };
 
   return (
-    <button className="button__login" onClick={handleLogin}>
+    <button
+      className="w-full bg-gray-600 p-2 text-white rounded-md"
+      onClick={handleLogin}
+    >
       Log In
     </button>
   );

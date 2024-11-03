@@ -52,7 +52,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white shadow-lg">
+    <nav className="bg-gray-100 py-4 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
@@ -72,7 +72,7 @@ const Navbar = () => {
                   `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      : "text-gray-800 hover:bg-gray-700 hover:text-white"
                   }`
                 }
               >
@@ -82,7 +82,7 @@ const Navbar = () => {
             ))}
             {isAuthenticated ? (
               <div className="relative group">
-                <button className="flex items-center space-x-2 text-sm font-medium text-gray-300 hover:text-white focus:outline-none">
+                <button className="flex items-center space-x-2 text-sm font-medium text-gray-800 hover:text-white focus:outline-none">
                   <img
                     src={user.picture}
                     alt={user.name}
@@ -115,7 +115,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setNav(!nav)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-800 hover:text-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               aria-expanded={nav}
             >
               <span className="sr-only">Open main menu</span>
@@ -140,7 +140,7 @@ const Navbar = () => {
                   `block px-3 py-2 rounded-md text-base font-medium ${
                     isActive
                       ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      : "text-gray-800 hover:bg-gray-700 hover:text-white"
                   }`
                 }
                 onClick={() => setNav(false)}
@@ -153,7 +153,7 @@ const Navbar = () => {
               <>
                 <Link
                   to="/profile"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-black"
                   onClick={() => setNav(false)}
                 >
                   <FaUser className="inline-block mr-2" />
@@ -164,14 +164,14 @@ const Navbar = () => {
                     handleLogout();
                     setNav(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-black"
                 >
                   <FaSignOutAlt className="inline-block mr-2" />
                   Logout
                 </button>
               </>
             ) : (
-              <div className="space-y-1 mt-2">
+              <div className=" flex flex-wrap gap-2 mt-2">
                 <LoginButton />
                 <SignupButton />
               </div>

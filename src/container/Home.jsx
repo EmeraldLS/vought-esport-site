@@ -16,18 +16,18 @@ const Home = () => {
               tournaments. Track player kills, organize lobbies, and manage your
               clan's competitive events.
             </p>
-            <div className="space-x-4">
+            <div className="gap-2 sm:gap-x-4 flex flex-wrap justify-center">
               <Link
-                to="/tournament/create"
+                to="/tournament/view"
                 className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300"
               >
-                Create Tournament
+                View Tournaments
               </Link>
               <Link
-                to="/players/register"
+                to="/players/view"
                 className="border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-blue-600 transition duration-300"
               >
-                Register Players
+                View Players
               </Link>
             </div>
           </div>
@@ -70,16 +70,16 @@ const Home = () => {
               </p>
               <div className="flex flex-col md:flex-row gap-4 justify-center">
                 <Link
-                  to="/tournament/view"
+                  to="/tournament/create"
                   className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300"
                 >
-                  View Tournaments
+                  Create Tournament
                 </Link>
                 <Link
-                  to="/players/view"
+                  to="/players/register"
                   className="bg-purple-600 text-white font-bold py-3 px-8 rounded-full hover:bg-purple-700 transition duration-300"
                 >
-                  View Players
+                  Register Players
                 </Link>
               </div>
             </div>
