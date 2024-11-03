@@ -75,8 +75,13 @@ const Navbar = () => {
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className="font-bold text-xl text-blue-600 transition-colors hover:text-blue-800"
+              className="font-bold text-xl flex flex-nowrap items-center gap-x-2 text-black transition-colors hover:text-gray-800"
             >
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-10 w-10 object-cover"
+              />
               Vought Esports
             </Link>
           </div>
@@ -88,7 +93,7 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-blue-100 text-blue-700"
+                      ? "bg-blue-100 text-blue-700 hover:text-black"
                       : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
                   }`
                 }
