@@ -4,11 +4,7 @@ import { PageLoader } from "./page-loader";
 
 export const AuthenticationGuard = ({ component }) => {
   const Component = withAuthenticationRequired(component, {
-    onRedirecting: () => (
-      <div className="page-layout">
-        <PageLoader />
-      </div>
-    ),
+    onRedirecting: () => <PageLoader />,
   });
 
   return <Component />;
