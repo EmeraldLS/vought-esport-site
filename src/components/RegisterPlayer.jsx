@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { postRequest } from "../api/ApiCall";
 import { RegPlayer } from "../api/APiURL";
 import { UserPlus, ArrowLeft, Loader2, XCircle } from "lucide-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const RegisterPlayer = () => {
   const defaultButtonName = "Register Player";
@@ -12,12 +13,33 @@ const RegisterPlayer = () => {
   const [buttonName, setButtonName] = useState(defaultButtonName);
   const navigate = useNavigate();
 
+  const { getAccessTokenSilently } = useAuth0();
+  const [accessToken, setAccessToken] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!isMounted) {
+      return;
+    }
+
+    const getToken = async () => {
+      const token = await getAccessTokenSilently();
+      setAccessToken(token);
+    };
+
+    getToken();
+    return () => {
+      isMounted = false;
+    };
+  }, [getAccessTokenSilently]);
+
   const {
     mutate,
     isError,
     error: err,
   } = useMutation({
-    mutationFn: (player) => postRequest(RegPlayer(), player),
+    mutationFn: (player) => postRequest(RegPlayer(), player, accessToken),
     onSuccess: () => {
       navigate("/players");
       setButtonName(defaultButtonName);

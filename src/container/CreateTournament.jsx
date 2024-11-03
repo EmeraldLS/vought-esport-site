@@ -1,23 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import GoBack from "../components/GoBack";
 import { useMutation } from "@tanstack/react-query";
 import { postRequest } from "../api/ApiCall";
 import { RegTour } from "../api/APiURL";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const CreateTournament = () => {
+export const CreateTournament = () => {
   const defaultButtonName = "Create Tournament";
   const [tournamentName, setTournamentName] = useState("");
   const [disabled, setDisabled] = useState(false);
   const [buttonName, setButtonName] = useState(defaultButtonName);
   const navigate = useNavigate();
 
+  const { getAccessTokenSilently } = useAuth0();
+  const [accessToken, setAccessToken] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!isMounted) {
+      return;
+    }
+
+    const getToken = async () => {
+      const token = await getAccessTokenSilently();
+      setAccessToken(token);
+    };
+
+    getToken();
+    return () => {
+      isMounted = false;
+    };
+  }, [getAccessTokenSilently]);
+
   const {
     mutate,
     isError,
     error: err,
   } = useMutation({
-    mutationFn: (tournament) => postRequest(RegTour(), tournament),
+    mutationFn: (tournament) => postRequest(RegTour(), tournament, accessToken),
     onSuccess: () => navigate("/tournament"),
     onError: () => {
       setDisabled(false);
@@ -159,5 +181,3 @@ const CreateTournament = () => {
     </div>
   );
 };
-
-export default CreateTournament;

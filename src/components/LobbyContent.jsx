@@ -5,6 +5,7 @@ import PlayerLobbyCard from "./PlayerLobbyCard";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRequest, putRequest } from "../api/ApiCall";
 import { AddPlayerKills, Players, PlayersInLobby } from "../api/APiURL";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const LobbyContent = () => {
   const defaultButtonName = "Submit";
@@ -38,6 +39,27 @@ const LobbyContent = () => {
     setShowForm(!showForm);
   };
 
+  const { getAccessTokenSilently } = useAuth0();
+  const [accessToken, setAccessToken] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!isMounted) {
+      return;
+    }
+
+    const getToken = async () => {
+      const token = await getAccessTokenSilently();
+      setAccessToken(token);
+    };
+
+    getToken();
+    return () => {
+      isMounted = false;
+    };
+  }, [getAccessTokenSilently]);
+
   const queryClient = useQueryClient();
 
   const {
@@ -46,7 +68,8 @@ const LobbyContent = () => {
     error: killsErr,
     isSuccess,
   } = useMutation({
-    mutationFn: (content) => putRequest(AddPlayerKills(id), content),
+    mutationFn: (content) =>
+      putRequest(AddPlayerKills(id), content, accessToken),
     onError: () => {
       setButtonName(defaultButtonName);
       setDisabled(false);
@@ -93,7 +116,7 @@ const LobbyContent = () => {
         {isError && (
           <div className="mb-6">
             <div className="bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg text-lg font-medium text-center">
-              {err.response.data.response}
+              {err.response.data.response ?? "Something went wrong"}
             </div>
           </div>
         )}
@@ -153,7 +176,8 @@ const LobbyContent = () => {
                   {isKillsErr && (
                     <div className="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
                       <p className="text-red-700">
-                        {killsErr.response.data.response}
+                        {killsErr.response.data.response ??
+                          "Something went wrong"}
                       </p>
                     </div>
                   )}

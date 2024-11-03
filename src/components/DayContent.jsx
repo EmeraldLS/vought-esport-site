@@ -11,6 +11,7 @@ import {
   PostLobby,
 } from "../api/APiURL";
 import { FaPlus, FaUsers, FaTrophy } from "react-icons/fa";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const DayContent = () => {
   const { id } = useParams();
@@ -50,6 +51,27 @@ const DayContent = () => {
     setTotalKillsData(data);
   };
 
+  const { getAccessTokenSilently } = useAuth0();
+  const [accessToken, setAccessToken] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!isMounted) {
+      return;
+    }
+
+    const getToken = async () => {
+      const token = await getAccessTokenSilently();
+      setAccessToken(token);
+    };
+
+    getToken();
+    return () => {
+      isMounted = false;
+    };
+  }, [getAccessTokenSilently]);
+
   const queryClient = useQueryClient();
 
   const {
@@ -58,7 +80,7 @@ const DayContent = () => {
     mutate,
     isSuccess,
   } = useMutation({
-    mutationFn: (newLobby) => postRequest(PostLobby(id), newLobby),
+    mutationFn: (newLobby) => postRequest(PostLobby(id), newLobby, accessToken),
   });
 
   const createLobby = async (e) => {
